@@ -204,30 +204,30 @@ export const accessRoutes: RouteRecordRaw[] = [
           }
         ],
       },
-      {
-        path: '/admin/logs',
-        name: 'logs',
-        component: BlankLayout,
-        redirect: '/admin/logs/operateLog',
-        meta: {
-          title: 'logs',
-          icon: 'rizhiguanli',
-        },
-        children: [
-          {
-            path: '/admin/logs/operateLog',
-            name: 'operateLog',
-            component: () => import('/@/views/logs/operateLog/index.vue'),
-            meta: {
-              title: 'operateLog',
-              keepAlive: true,
-              icon: 'caozuorizhi32',
-              breadcrumb: true,
-              auth: ['operateLog']
-            },
-          }
-        ],
-      }
+      // {
+      //   path: '/admin/logs',
+      //   name: 'logs',
+      //   component: BlankLayout,
+      //   redirect: '/admin/logs/operateLog',
+      //   meta: {
+      //     title: 'logs',
+      //     icon: 'rizhiguanli',
+      //   },
+      //   children: [
+      //     {
+      //       path: '/admin/logs/operateLog',
+      //       name: 'operateLog',
+      //       component: () => import('/@/views/logs/operateLog/index.vue'),
+      //       meta: {
+      //         title: 'operateLog',
+      //         keepAlive: true,
+      //         icon: 'caozuorizhi32',
+      //         breadcrumb: true,
+      //         auth: ['operateLog']
+      //       },
+      //     }
+      //   ],
+      // }
     ],
   },
 ];

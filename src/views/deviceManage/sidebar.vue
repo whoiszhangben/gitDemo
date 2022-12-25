@@ -27,6 +27,7 @@
         block-node
         :tree-data="deviceTreeData"
         @expand="onExpand"
+        v-model:selectedKeys="selectedKeys"
       >
         <template #icon="{ key }">
           <template v-if="key.indexOf('_') === -1">
@@ -51,11 +52,11 @@
               <span style="color: #f50">{{ searchValue }}</span>
             {{ node.title.substr(node.title.indexOf(searchValue) + searchValue.length) }}
             </span>
-            <span v-else 
+            <span v-else class="deviceItem"
             v-on:mouseenter="onMouseEnter(node)"
-            v-on:mouseleave="node.hoverIndex = -1"
+            v-on:mouseleave="node.isHovered = false"
             >{{ node.title }}</span>
-            <delete-outlined class="delDevice" />
+            <delete-outlined class="delDevice" v-if="activeIndex"/>
           </template>
         </template>
       </a-tree>
@@ -74,6 +75,7 @@
 
     const searchValue = ref('');
     const activeIndex = ref(-1);
+    const selectedKeys = ref<string[]>([]);
     const changeValue = () => {
         if (searchValue.value === '') {
             activeIndex.value = -1;
@@ -197,8 +199,8 @@
       console.log('deleteAgent:',item, index)
     }
 
-    const onMouseEnter = (key) => {
-        console.log('----------onMouseEnter:', key)
+    const onMouseEnter = (node) => {
+        node.isHovered = true;
     }
 
     const initData = () => {
@@ -353,12 +355,19 @@
 :deep(.ant-tree .ant-tree-node-content-wrapper) {
   line-height: 40px;
 }
+:deep(.ant-tree .ant-tree-node-content-wrapper-normal) {
+  padding-left: 36px;
+  margin-left: -32px;
+}
 :deep(.ant-tree .ant-tree-title) {
   margin-left: 16px;
 }
 :deep(.ant-tree .ant-tree-iconEle) {
   line-height: 40px;
   vertical-align: 2px !important;
+}
+:deep(.ant-tree .ant-tree-node-content-wrapper-normal .ant-tree-iconEle) {
+  margin-left: -24px;
 }
 :deep(.ant-tree .ant-tree-switcher) {
   line-height: 40px;
@@ -369,14 +378,17 @@
 :deep(.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected::before) {
   content: '';
   position: absolute;
-  margin-left: -3px;
+  margin-left: -36px;
   margin-top: 14px;
   width: 2px;
   height: 16px;
   background: #3766F4;
 }
 .deviceItem {
-
+  padding: 11px 0;
+  border-left: 65px solid transparent;
+  margin-left: -65px;
+  border-right: 65px solid transparent;
 }
 .delDevice {
   position: absolute;
