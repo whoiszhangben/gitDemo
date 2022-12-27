@@ -2,28 +2,32 @@ import { defineStore } from 'pinia';
 import fetchApi from '/@/api/device'
 
 interface DeviceState {
-    deviceList: any[]
+    deviceList: any[],
+    selectedKey: string
 }
 
-
-export const useAgentStore = defineStore("app-device", {
+export const useDeviceStore = defineStore("app-device", {
     state: (): DeviceState => {
         return {
-            deviceList: []
+            deviceList: [],
+            selectedKey: ''
         }
     },
     getters: {
 
     },
     actions: {
+        setSelectKey(key: string) {
+            this.selectedKey = key;
+        },
         setDeviceList(deviceList: any) {
             this.deviceList = deviceList;
         },
-        async getAgentList() {
+        async getDeviceList() {
             const res = await fetchApi.deviceList()
-            if (res && Array.isArray(res.list)) {
-                this.setDeviceList(res.list);
-                return res.list;
+            if (res) {
+                this.setDeviceList(res);
+                return res;
             }
             return null;
         }

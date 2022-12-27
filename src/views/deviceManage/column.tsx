@@ -29,22 +29,56 @@ export const columns: ColumnProps[] = [
 
 export const columns_readonly: ColumnProps[] = [
     {
-        key: 'portName',
-        dataIndex: 'portName',
-        width: 200
+        key: 'indexName',
+        dataIndex: 'indexName',
+        width: 110
     },
     {
-        key: 'portNo',
-        dataIndex: 'portNo',
-        width: 200
+        key: 'indexNo',
+        dataIndex: 'indexNo',
+        width: 80
     },
     {
-        key: 'portType',
-        dataIndex: 'portType',
-        width: 200
+        key: 'oId',
+        dataIndex: 'oId',
+        width: 120
     },
     {
-        key: 'portDesc',
-        dataIndex: 'portDesc',
+        key: 'valueType',
+        dataIndex: 'valueType',
+        width: 100
+    },
+    {
+        key: 'isControlable',
+        dataIndex: 'isControlable',
+        width: 100
+    },
+    {
+        key: 'isEmitter',
+        dataIndex: 'isEmitter',
+        width: 100
+    },
+    {
+        key: 'isAlert',
+        dataIndex: 'isAlert',
+        width: 100
+    },
+    {
+        key: 'hysType',
+        dataIndex: 'hysType',
+        width: 100
+    },
+    {
+        key: 'hysTime',
+        dataIndex: 'hysTime',
+        width: 80
+    },
+    {
+        key: 'rules',
+        dataIndex: 'rules',
+    },
+    {
+        key: 'valMapping',
+        dataIndex: 'valMapping',
     },
 ];

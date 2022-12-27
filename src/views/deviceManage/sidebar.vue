@@ -1,6 +1,6 @@
 <template>
     <div class="sidebar">
-      <div class="pTitle">{{ $t('agentList') }}</div>
+      <div class="pTitle">{{ $t('deviceList') }}</div>
       <div class="actionGroup">
         <div :title="$t('import')"><img src="../../assets/agent_import.png" /></div>
         <div :title="$t('export')"><img src="../../assets/agent_export.png" /></div>
@@ -47,16 +47,19 @@
           <span v-else>{{ node.title }}</span>
           </template>
           <template v-else>
-            <span class="deviceItem" v-if="searchValue && node.title.indexOf(searchValue) > -1">
+            <span class="deviceItem" v-if="searchValue && node.title.indexOf(searchValue) > -1"
+              v-on:mouseenter="onMouseEnter(node)"
+              v-on:mouseleave="hoverItem = null"
+              >
               {{ node.title.substr(0, node.title.indexOf(searchValue)) }}
               <span style="color: #f50">{{ searchValue }}</span>
             {{ node.title.substr(node.title.indexOf(searchValue) + searchValue.length) }}
             </span>
             <span v-else class="deviceItem"
             v-on:mouseenter="onMouseEnter(node)"
-            v-on:mouseleave="node.isHovered = false"
+            v-on:mouseleave="hoverItem = null"
             >{{ node.title }}</span>
-            <delete-outlined class="delDevice" v-if="activeIndex"/>
+            <delete-outlined class="delDevice" v-if="(selectedKeys.length && selectedKeys[0] === node.key) || isHovered(node) "/>
           </template>
         </template>
       </a-tree>
@@ -65,26 +68,28 @@
 
 <script lang="ts" setup>
     import { SearchOutlined, CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons-vue';
-    import { useAgentStore } from '/@/store/modules/agent';
+    import { useDeviceStore } from '/@/store/modules/device';
     import type { TreeProps } from 'ant-design-vue';
+    import { useI18n } from 'vue-i18n';
+    import { DataNode } from 'ant-design-vue/lib/tree';
+    const { t } = useI18n();
 
-    const agentStore = useAgentStore();
-    let agentList = computed(() => agentStore.agentList);
-
-    const emits = defineEmits(['toggle']);
+    const deviceStore = useDeviceStore();
+    let deviceList = computed(() => deviceStore.deviceList);
 
     const searchValue = ref('');
-    const activeIndex = ref(-1);
+    const hoverItem = ref<any>(null);
     const selectedKeys = ref<string[]>([]);
+    watch(() => deviceStore.selectedKey, (val) => {
+      selectedKeys.value = [val]
+    })
     const changeValue = () => {
         if (searchValue.value === '') {
-            activeIndex.value = -1;
             initData();
         }
     }
     const clearKeyword = () => {
         searchValue.value = '';
-        activeIndex.value = -1;
         initData();
     }
     const onSearch = () => {
@@ -93,87 +98,15 @@
         }
     }
 
+    watch(selectedKeys, (val) => {
+      if (Array.isArray(val) && val.length) {
+        deviceStore.setSelectKey(val[0])
+      }
+    })
+
     const expandedKeys = ref<(string | number)[]>(['1']);
     const autoExpandParent = ref<boolean>(true);
-    const genData: TreeProps['treeData'] = [
-      {
-      key: '1',
-      title: '通用系统',
-      icon: '',
-      children: [
-        {
-          key: '1_1',
-          title: 'DS-C11N-VWMS1',
-        },
-        {
-          key: '1_2',
-          title: 'DS-C11N-VWMS2',
-        },
-        {
-          key: '1_3',
-          title: 'DS-C11N-VWMS3',
-        }
-      ]
-    },
-    {
-      key: '2',
-      title: '监控系统',
-      icon: '',
-      children: [
-        {
-          key: '2_1',
-          title: 'DS-C21N-VWMS1',
-        },
-        {
-          key: '2_2',
-          title: 'DS-C21N-VWMS2',
-        },
-        {
-          key: '2_3',
-          title: 'DS-C21N-VWMS3',
-        }
-      ]
-    },
-    {
-      key: '3',
-      title: '门禁系统',
-      icon: '',
-      children: [
-        {
-          key: '3_1',
-          title: 'DS-C31N-VWMS1',
-        },
-        {
-          key: '3_2',
-          title: 'DS-C31N-VWMS2',
-        },
-        {
-          key: '3_3',
-          title: 'DS-C31N-VWMS3',
-        }
-      ]
-    },
-    {
-      key: '4',
-      title: '报警系统',
-      icon: '',
-      children: [
-        {
-          key: '4_1',
-          title: 'DS-C41N-VWMS1',
-        },
-        {
-          key: '4_2',
-          title: 'DS-C41N-VWMS2',
-        },
-        {
-          key: '4_3',
-          title: 'DS-C41N-VWMS3',
-        }
-      ]
-    }
-  ];
-    const deviceTreeData = ref<TreeProps['treeData']>(genData);
+    const deviceTreeData = ref<TreeProps['treeData']>([]);
     const onExpand = (keys: string[]) => {
       console.log('---onExpand:', keys);
       expandedKeys.value = keys;
@@ -182,37 +115,65 @@
 
     const addAgent = () => {}
 
-    const selectAgentItem = (item, index) => {
-      console.log('selectAgentItem:', item);
-        if (index === activeIndex.value) {
-            return;
-        }
-        if (!item) {
-            activeIndex.value = -1;
-        }
-        activeIndex.value = index;
-        emits('toggle', item);
-    }
-
     const delAgent = (item, index) => {
       debugger
       console.log('deleteAgent:',item, index)
     }
 
     const onMouseEnter = (node) => {
-        node.isHovered = true;
+      hoverItem.value = node;
     }
 
+    let isHovered = computed(() => (item: any) => {
+      return item.key === hoverItem.value?.key
+    })
+
     const initData = () => {
-        // 获取当前代理列表信息并选中第一条记录
-      if (!(Array.isArray(agentList.value) && agentList.value.length)) {
-        agentStore.getAgentList().then(() => {
-            selectAgentItem(agentList.value[0], 0)
+      if (!(Array.isArray(deviceList.value) && deviceList.value.length)) {
+        deviceStore.getDeviceList().then(() => {
+          deviceTreeData.value = initializeDeviceList(deviceList.value)
+          for(let i = 0; i < deviceTreeData.value.length; i++) {
+            let item = deviceTreeData.value[i];
+            if (item && Array.isArray(item.children) && item.children) {
+              deviceStore.setSelectKey(item.children[0].key as string);
+              break;
+            }
+          }
+          console.log('------deviceTreeData1,', deviceTreeData.value)
         });
       } else {
-        console.log('cached alertLevellist:',agentList.value)
-        selectAgentItem(agentList.value[0], 0)
+        deviceTreeData.value = initializeDeviceList(deviceList.value)
+        console.log('------deviceTreeData2,', deviceTreeData.value)
       }
+    }
+
+    const initializeDeviceList = (deviceList) => {
+      // 将设备列表转化为TreeData
+      let treeData: TreeProps['treeData'] = []
+      console.log('initializeDeviceList:', deviceList)
+      if (Array.isArray(deviceList)) {
+        deviceList.forEach(device => {
+          let selectItem = treeData?.find(x => x.key === `${device.deviceType}`);
+          if (!selectItem) {
+            let subSystem: DataNode = {
+              key: `${device.deviceType}`,
+              title: t(`subSystem${device.deviceType}`),
+              children: []
+            }
+            subSystem.children?.push({
+              key: `${device.deviceType}_${device.id}`,
+              title: device.deviceName
+            })
+            treeData?.push(subSystem)
+          } else {
+            selectItem.children?.push({
+              key: `${device.deviceType}_${device.id}`,
+              title: device.deviceName
+            })
+          }
+        })
+      }
+      return treeData;
     }
 
     onMounted(() => {
@@ -388,7 +349,8 @@
   padding: 11px 0;
   border-left: 65px solid transparent;
   margin-left: -65px;
-  border-right: 65px solid transparent;
+  border-right: 95px solid transparent;
+  white-space: nowrap;
 }
 .delDevice {
   position: absolute;

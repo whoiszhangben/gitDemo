@@ -1,20 +1,27 @@
-export interface Port {
+export interface Index {
     id?: number,
-    portName: string,
-    portNo: number,
-    portType: number
+    indexName: string,
+    oId: number,
+    valueType: number,
+    isControlable: boolean,
+    isAlert: boolean,
+    hysType: number,
+    hysTime: number,
+    valMapping: string,
+    rules: any[]
 }
 
-export interface ResAgent {
+export interface ResDevice {
     id: number,
-    agentName: string,
+    deviceName: string,
+    deviceType: number,
     model: string,
-    vendor: string,
-    contact: string,
-    remark: string,
+    brand: string,
+    plugin: number | undefined,
     isAlert: boolean,
     alertLevel?: number,
     hysType?: number,
     hysTime?: number,
-    ports: Port[]
+    extAttrs: string,
+    indexs: Index[]
 }

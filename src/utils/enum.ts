@@ -29,6 +29,28 @@ export const enums = {
         ADMIN: 1,
         OPERATOR: 2,
         USER: 3
+    },
+    subSystem: {
+        COMMON: 1, // 通用系统
+        MONITOR: 2, // 监控系统
+        ENTRANCE: 3, // 门禁系统
+        ALARM: 4, // 报警系统
+        WATERCOOLING: 5, // 水冷系统
+        LIGHTCONTROL: 6 // 照明控制
+    },
+    valueType: {
+        NUMBER: 1,
+        TEXT: 2,
+        BOOLEAN: 3,
+        STATUS: 4,
+    },
+    operator: {
+        Equal: 1,
+        NotEqual: 2,
+        GreaterThan: 3,
+        LessThan: 4,
+        GreaterThanOrEqual: 5,
+        LessThanOrEqual: 6
     }
 
 }
